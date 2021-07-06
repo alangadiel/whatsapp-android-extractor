@@ -6,11 +6,15 @@ import codecs
 from datetime import datetime
 
 
-def fmt_phone(number):
+def fmt_phone(number, name):
+    if number is None:
+        return
     number = number.replace(' ', '').replace('-', '').replace('+', '')
+    if number == '':
+        return
     if not number.startswith('549'):
         number = '549' + number
-    return number
+    contacts_dict[number] = name
 
 
 contacts_file = sys.argv[1]
@@ -22,15 +26,17 @@ os.mkdir(dest_path_contacts)
 dest_path_groups = dest_path+'\\groups'
 os.mkdir(dest_path_groups)
 
+# TODO: replace unicode chars for files
 # get contact list from csv
 contacts_dict = {}
 with open(contacts_file, newline='') as csv_file:
     csv_reader = csv.reader(csv_file)
     next(csv_reader, None)  # skip first item.
     for row in csv_reader:
-        phone = fmt_phone(row[34])
         name = row[0]
-        contacts_dict[phone] = name
+        fmt_phone(row[34], name+" - 1")
+        fmt_phone(row[36], name+" - 2")
+        fmt_phone(row[38], name+" - 3")
 
 # get groups from whatsapp db
 groups_dict = {}
@@ -102,6 +108,6 @@ with sqlite3.connect(ms_db_path) as con_ms:
                         separator = '<<<'
 
                     line = dt_str+' '+separator+' '+content+'\n'
-                    file.write(line)  # TODO: unicode
+                    file.write(line)
 
         # TODO: groups
