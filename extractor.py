@@ -3,6 +3,7 @@ import csv
 import sys
 import os
 import codecs
+from datetime import datetime
 
 
 def fmt_phone(number):
@@ -92,14 +93,15 @@ with sqlite3.connect(ms_db_path) as con_ms:
                         if res_media_caption is not None:
                             content = content + ' ' + res_media_caption
 
-                    datetime = res_timestamp  # TODO: format
+                    dt = datetime.utcfromtimestamp(int(res_timestamp)/1000)
+                    dt_str = dt.strftime('%Y-%m-%d %H:%M:%S')
 
                     if res_key_from_me == 1:
                         separator = '>>>'
                     else:
                         separator = '<<<'
 
-                    line = str(datetime)+' '+separator+' '+content+'\n'
+                    line = dt_str+' '+separator+' '+content+'\n'
                     file.write(line)  # TODO: unicode
 
         # TODO: groups
